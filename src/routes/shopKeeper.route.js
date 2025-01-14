@@ -8,6 +8,6 @@ const router = Router()
 router.route("/shopkeeperRegister").post(registerShopkeeper)
 router.route("/shopkeeperLogin").post(shopkeeperLogin)
 router.route("/shopkeeperLogout").post(verifyJWT,logoutShopKeeper)
-router.route("/LocationUpdate").post(verifyJWT,changeLocationcdd)
+router.route("/LocationUpdate").post(verifyJWT,changeLocation)
 
 export default router;
