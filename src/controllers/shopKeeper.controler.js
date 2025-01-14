@@ -165,11 +165,34 @@ const regenerateShopKeeperAccessAndRefreshToken = AsyncHandeler(async(req,res)=>
     }
 })
 
+const changePhNo = AsyncHandeler(async(req,res)=>{
+    const {newPhNo} = req.body
+    if(!newPhNo){
+        throw new ApiError(404,"Please fill the current field...")
+    }
+    await shopkeeper.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set : {
+                phNo : newPhNo
+            }
+        },
+        {
+            new : true
+        }
+    )
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200,{},"Phone number updated successfully...")
+    )
+})
 
 export {
     registerShopkeeper,
     shopkeeperLogin,
     logoutShopKeeper,
     changeLocation,
-    regenerateShopKeeperAccessAndRefreshToken
+    regenerateShopKeeperAccessAndRefreshToken,
+    changePhNo
 }
