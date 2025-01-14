@@ -128,10 +128,48 @@ const changeLocation = AsyncHandeler(async(req,res)=>{
     )
 })
 
+const regenerateShopKeeperAccessAndRefreshToken = AsyncHandeler(async(req,res)=>{
+    const incommingrefreshToken = req.cookies.refreshToken || req.body.refreshToken;
+    if(!incommingrefreshToken){
+        throw new ApiError(401,"User not authenticated...")
+    }
+    try{
+        const decodedAccessToken = jwt.verify(
+            incommingrefreshToken,
+            process.env.REFRESH_TOKEN_SECRET
+        )
+        const ShopkeeperUser = await shopkeeper.findById(decodedAccessToken?._id);
+        if(!ShopkeeperUser){
+            throw new ApiError(401,"User details are not found")
+        }
+        if(incommingrefreshToken != ShopkeeperUser?.refreshToken){
+            throw new ApiError(401,"refreshToken is expired or used...")
+        }
+        const {newAccessToken,newRefreshToken} = generateAccessAndRefreshToken(ShopkeeperUser._id);
+        const option = {
+            httpOnly : true,
+            secure : true
+        }
+        return res
+        .status(200)
+        .cookie("accessToken",newAccessToken)
+        .cookie("refreshToken",newRefreshToken)
+        .json(
+            new ApiResponse(200,{
+                accessToken : newAccessToken,
+                refreshToken : newRefreshToken
+            },"Access and Refresh Tokens are refreshed successfully...")
+        )
+    }catch(error){
+        throw new ApiError(400,error?.message || "Invalid refresh Token")
+    }
+})
+
 
 export {
     registerShopkeeper,
     shopkeeperLogin,
     logoutShopKeeper,
-    changeLocation
+    changeLocation,
+    regenerateShopKeeperAccessAndRefreshToken
 }

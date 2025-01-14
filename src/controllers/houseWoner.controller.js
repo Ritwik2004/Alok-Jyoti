@@ -239,10 +239,10 @@ const WonerRefreshAccessToken = AsyncHandeler(async(req,res)=>{
             process.env.REFRESH_TOKEN_SECRET
         )
         const wonerUser = await HouseWoner.findById(decodedAccessToken?._id);
-        if(!user){
+        if(!wonerUser){
             throw new ApiError(404,"HouseWoner id unavaliable!!!")
         } 
-        if(incommingrefreshToken != user?.refreshAccessToken){
+        if(incommingrefreshToken != wonerUser?.refreshToken){
             throw new ApiError(401,"refreshToken is expired or used...")
         }
         const {newAccessToken,newRefreshToken} = generateAccessAndRefreshToken(wonerUser._id);
