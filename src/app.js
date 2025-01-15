@@ -6,6 +6,7 @@ import productOperation from "./routes/product.route.js"
 import shopKeeper from "./routes/shopKeeper.route.js"
 import houseWoner from "./routes/houseWoner.route.js"
 import notes from "./routes/notes.route.js"
+import order from "./routes/order.route.js"
 import cors from "cors"
 const app = express();
 
@@ -28,6 +29,7 @@ app.use("/api/v1/notes",notes);
 app.use("/api/v1/rooms",roomsOperations);
 app.use("/api/v1/houseWoner",houseWoner);
 app.use("/api/v1/product",productOperation);
-app.use("/api/v1/shopKeeper",shopKeeper)
+app.use("/api/v1/shopKeeper",shopKeeper);
+app.use("/api/v1/product",order);
 
 export default app;
