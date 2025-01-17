@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewere/auth.middlewire.js";
 import { upload } from "../middlewere/multer.middlewire";
-import { uploadProduct, viewProduct, ChangeDeleveryDate, changePrice, changeAvaliability, starAndReview } from "../controllers/product.controler";
+import { uploadProduct, viewProduct, ChangeDeleveryDate, changePrice, changeAvaliability, starAndReview, getAllProduct, getSearchedProducts } from "../controllers/product.controler";
 
 const router = Router()
 
@@ -24,5 +24,7 @@ router.route("/:productId/changeDeliveryDate").get(verifyJWT,ChangeDeleveryDate)
 router.route("/:productId/changePrice").get(verifyJWT,changePrice)
 router.route("/:productId/changeAvaliability").get(verifyJWT,changeAvaliability)
 router.route("/:productId/Review").get(verifyJWT,starAndReview)
+router.route("/products").post(getAllProduct)
+router.route("/getSearchedProducts").post(getSearchedProducts)
 
 export default router;
