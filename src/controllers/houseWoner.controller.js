@@ -301,13 +301,16 @@ const changeWonerPassword = AsyncHandeler(async(req,res)=>{
     if(!oldPassword || !newPassword){
         throw new ApiError(404,"All elements are required...")
     }
-    const woner = await HouseWoner.findById(req.user?.username);
-    const passwordValidation = await HouseWoner.isPasswordCorrect(oldPassword);
-    if(!passwordValidation){
+    console.log("All filds are avaliable...")
+    const woner = await HouseWoner.findById(req.user?._id);
+    console.log("User finded...")
+    const PasswordCorrect = await woner.isPasswordCorrect(oldPassword);
+    console.log("Password checked and status is : ",PasswordCorrect)
+    if(!PasswordCorrect){
         throw new ApiError(404,"Old password is not correct...")
     }
-    HouseWoner.password = newPassword;
-    HouseWoner.save({validateBeforeSave : false})
+    woner.password = newPassword;
+    woner.save({validateBeforeSave : false})
     return res
     .status(200)
     .json(
@@ -320,7 +323,7 @@ const changeScanner = AsyncHandeler(async(req,res)=>{
     if(!ScannerLocalPath){
         throw new ApiError(404,"Scanner not found...")
     }
-    const Scanner = uploadCloudinary(ScannerLocalPath);
+    const Scanner = await uploadCloudinary(ScannerLocalPath);
     if(!Scanner){
         throw new ApiError(404,"Error while uploading on cloudinary...")
     }

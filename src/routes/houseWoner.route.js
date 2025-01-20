@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { upload } from "../middlewere/multer.middlewire.js";
-import { verifyJWT } from "../middlewere/auth.middlewire.js";
+import { verifyJWTForHouseWoner } from "../middlewere/authHouseOwner.middlewire.js";
 import { registerHouseWoner, HouseWonerLogin, logoutWoner, getProfile, WonerRefreshAccessToken, updateWonerAvatar, changeWonerPassword, changeScanner, changeUpiId, changeEmail } from "../controllers/houseWoner.controller.js";
 
 
@@ -19,8 +19,8 @@ router.route("/registerHouseWoner").post(
     ]),
     registerHouseWoner);
 router.route("/HouseWonerLogin").post(HouseWonerLogin);
-router.route("/HouseWonerLogout").post(verifyJWT,logoutWoner);
-router.route("/Profile").post(verifyJWT,getProfile);
+router.route("/HouseWonerLogout").post(verifyJWTForHouseWoner,logoutWoner);
+router.route("/Profile").post(verifyJWTForHouseWoner,getProfile);
 router.route("/regenerateWonerTokens").post(WonerRefreshAccessToken);
 router.route("/updateWonerAvatar").patch(
     upload.fields([
@@ -29,10 +29,10 @@ router.route("/updateWonerAvatar").patch(
             maxCount : 1
         }
     ]),
-    verifyJWT,
+    verifyJWTForHouseWoner,
     updateWonerAvatar
 )
-router.route("/changeWonerPassword").patch(verifyJWT,changeWonerPassword);
+router.route("/changeWonerPassword").patch(verifyJWTForHouseWoner,changeWonerPassword);
 router.route("/changeScanner").patch(
     upload.fields([
         {
@@ -40,9 +40,9 @@ router.route("/changeScanner").patch(
             maxCount : 1
         }
     ]),
-    verifyJWT,changeScanner);
-router.route("/changeUpiId").patch(verifyJWT,changeUpiId);
-router.route("/changeEmail").patch(verifyJWT,changeEmail);
+    verifyJWTForHouseWoner,changeScanner);
+router.route("/changeUpiId").patch(verifyJWTForHouseWoner,changeUpiId);
+router.route("/changeEmail").patch(verifyJWTForHouseWoner,changeEmail);
 
 
 export default router
