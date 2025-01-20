@@ -48,12 +48,13 @@ const uploadRooms = AsyncHandeler(async(req,res)=>{
 
 const updateAvaliable = AsyncHandeler(async(req,res)=>{
     const { status } = req.body;
-    const roomId = req.params.trim();
+    const roomId = req.params.roomId?.trim();
+    console.log("Room id is : ",roomId)
     if(!roomId){
         throw new ApiError(404,"Room id Not Found...")
     }
     const room = await Room.findById(roomId)
-    if(room.owner != req.user._id){
+    if(room.owner.toString() !== req.user._id.toString()){
         throw new ApiError(401,"Sorry! You are not the woner of this room!!!")
     }
     const updatedRoomDetails = await Room.findByIdAndUpdate(
@@ -76,6 +77,10 @@ const updateAvaliable = AsyncHandeler(async(req,res)=>{
 
 const deletRoom = AsyncHandeler(async(req,res)=>{
     const { roomId } = req.body
+    const room = await Room.findById(roomId)
+    if(room.owner.toString() !== req.user._id.toString()){
+        throw new ApiError(401,"Sorry! You are not the woner of this room!!!")
+    }
     await Room.deleteOne({
         _id: new mongoose.Types.ObjectId(roomId)
     })

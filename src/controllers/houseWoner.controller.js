@@ -187,7 +187,7 @@ const getProfile = AsyncHandeler(async(req,res)=>{
             $lookup : {
                 from : "rooms",
                 localField : "_id",
-                foreignField : "woner",
+                foreignField : "owner",
                 as : "AllRooms"
             }
         },
@@ -199,20 +199,35 @@ const getProfile = AsyncHandeler(async(req,res)=>{
             }
         },
         {
-            $project : {
-                "NoOfRooms.NoOfStudents" : 1,
-                "NoOfRooms.RoomType" : 1,
-                "NoOfRooms.flore" : 1,
-                "NoOfRooms.rent" : 1,
-                "NoOfRooms.image1" : 1,
-                "AllRooms" : 1,
-                "fullname" : 1,
-                "avatar" :1,
-                "PhNo" : 1,
-                "email" : 1,
-                "UpiId" : 1,
-                "PaymentMode" : 1,
-                "Address" : 1
+            // $project : {
+            //     "NoOfRooms.NoOfStudents" : 1,
+            //     "NoOfRooms.RoomType" : 1,
+            //     "NoOfRooms.flore" : 1,
+            //     "NoOfRooms.rent" : 1,
+            //     "NoOfRooms.image1" : 1,
+            //     "AllRooms" : 1,
+            //     "fullname" : 1,
+            //     "avatar" :1,
+            //     "PhNo" : 1,
+            //     "email" : 1,
+            //     "UpiId" : 1,
+            //     "PaymentMode" : 1,
+            //     "Address" : 1
+            // }
+            $project: {
+                NoOfRooms: 1,
+                "AllRooms.noOfStudints": 1,
+                "AllRooms.roomType": 1,
+                "AllRooms.flore": 1,
+                "AllRooms.rent": 1,
+                "AllRooms.image1": 1,
+                fullname: 1,
+                avatar: 1,
+                PhNo: 1,
+                email: 1,
+                UpiId: 1,
+                PaymentMode: 1,
+                Address: 1
             }
         }
     ])
