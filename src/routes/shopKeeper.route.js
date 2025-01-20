@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewere/auth.middlewire.js";
-import { registerShopkeeper,shopkeeperLogin,logoutShopKeeper,changeLocation,regenerateShopKeeperAccessAndRefreshToken, changePhNo } from "../controllers/shopKeeper.controler";
+import { registerShopkeeper,shopkeeperLogin,logoutShopKeeper,changeLocation,regenerateShopKeeperAccessAndRefreshToken, changePhNo } from "../controllers/shopKeeper.controler.js";
 
 
 const router = Router()

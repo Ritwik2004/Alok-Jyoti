@@ -7,17 +7,15 @@ import { uploadCloudinary } from "../utils/uploadCloudinary.js";
 import mongoose from "mongoose";
 
 const generateAccessAndRefreshToken = (async(userId)=>{
-    try{
-        const user = await HouseWoner.findById(userId);
-        const accessToken = user.generateAccessToken();
-        const refreshToken = user.generateRefreshToken();
-        user.refreshToken = refreshToken;
-        await user.save({validateBeforeSave : false});
-        return {accessToken,refreshToken};
-    }
-    catch(error)
-    {
-        throw new ApiError(500,"Something went wrong while generate access and refresh token...")
+    try {
+       const user = await HouseWoner.findById(userId);
+       const accessToken = user.generateAccessToken();
+       const refreshToken = user.generateRefreshToken();
+       user.refreshToken = refreshToken;
+       await user.save({validateBeforeSave: false});
+       return {accessToken,refreshToken};
+    } catch (error) {
+        throw new ApiError(500,"Something went wrong while generating refresh token and access token")
     }
 })
 
@@ -109,29 +107,29 @@ const HouseWonerLogin = AsyncHandeler(async(req,res)=>{
     //send them by using cookies
 
 // 1. collect deta from req.body
-    const {email,PhNo,password} = req.body
+    const {email,username,password} = req.body
 
-    if(!email || !PhNo || !password)
+    if(!email || !username || !password)
     {
         throw new ApiError(400,"All the fields are required...")
     }
 //2. verify
     const woner = await HouseWoner.findOne({
-        $or : [{email},{PhNo}]
+        $or : [{email},{username}]
     })
     if(!woner){
         throw new ApiError(404,"User doesnot exist...")
     }
 //3. check password
-    const PasswordCorrect = await HouseWoner.isPasswordCorrect(password);
+    const PasswordCorrect = await woner.isPasswordCorrect(password);
+    console.log(PasswordCorrect)
     if(!PasswordCorrect){
         throw new ApiError(404,"incorrect password...");
     }
 //4. generate access and refresh token
-    const {accessToken,refreshToken} = generateAccessAndRefreshToken(woner._id);
+    const {accessToken,refreshToken} = await generateAccessAndRefreshToken(woner._id);
 //5. hide refresh token and password 
-    const loggedinWoner = await HouseWoner.findById(woner._id).select("-password -refreshToken -available");
-
+    const loggedinWoner = await HouseWoner.findById(woner._id).select("-password -refreshToken");
     const options = {
         httpOnly : true,
         secure : true
@@ -140,7 +138,7 @@ const HouseWonerLogin = AsyncHandeler(async(req,res)=>{
     return res
     .status(200)
     .cookie("accessToken",accessToken,options)
-    .cookie("refreshToken".refreshToken,options)
+    .cookie("refreshToken",refreshToken,options)
     .json(
         new ApiResponse(
             200,{
@@ -152,6 +150,7 @@ const HouseWonerLogin = AsyncHandeler(async(req,res)=>{
 })
 
 const logoutWoner = AsyncHandeler(async(req,res) =>{
+    console.log("Comming here")
     await HouseWoner.findByIdAndUpdate(
         req.user._id,
         {

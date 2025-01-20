@@ -27,7 +27,7 @@ app.use(express.json({limit : "16kb"}));
 app.use("/api/v1/users",userRoutes);
 app.use("/api/v1/notes",notes);
 app.use("/api/v1/rooms",roomsOperations);
-app.use("/api/v1/houseWoner",houseWoner);
+app.use("/api/v1/houseOwner",houseWoner);
 app.use("/api/v1/product",productOperation);
 app.use("/api/v1/shopKeeper",shopKeeper);
 app.use("/api/v1/product",order);

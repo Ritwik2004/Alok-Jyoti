@@ -117,7 +117,7 @@ const registerUser = AsyncHandeler(async(req,res) => {
     // console.log("avatar checking is successfully...")
 
     //6. create user object
-    const createUser = User.create({
+    const createUser = await User.create({
         username : username,
         email,
         fullname,

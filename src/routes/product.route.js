@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewere/auth.middlewire.js";
-import { upload } from "../middlewere/multer.middlewire";
-import { uploadProduct, viewProduct, ChangeDeleveryDate, changePrice, changeAvaliability, starAndReview, getAllProduct, getSearchedProducts } from "../controllers/product.controler";
+import { upload } from "../middlewere/multer.middlewire.js";
+import { uploadProduct, viewProduct, ChangeDeleveryDate, changePrice, changeAvaliability, starAndReview, getAllProduct, getSearchedProducts } from "../controllers/product.controler.js";
 
 const router = Router()
 

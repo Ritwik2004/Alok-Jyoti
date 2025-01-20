@@ -19,7 +19,7 @@ router.route("/registerHouseWoner").post(
     ]),
     registerHouseWoner);
 router.route("/HouseWonerLogin").post(HouseWonerLogin);
-router.route("HouseWonerLogout").post(verifyJWT,logoutWoner);
+router.route("/HouseWonerLogout").post(verifyJWT,logoutWoner);
 router.route("/Profile").post(verifyJWT,getProfile);
 router.route("/regenerateWonerTokens").post(WonerRefreshAccessToken);
 router.route("/updateWonerAvatar").patch(

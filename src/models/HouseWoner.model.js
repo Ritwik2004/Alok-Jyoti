@@ -68,7 +68,7 @@ WonerSchema.pre("save",async function (next) {
 })
 
 WonerSchema.methods.isPasswordCorrect = async function(password){
-    return await bcrypt.compare(password,this.password)
+    return await bcrypt.compare(password, this.password)
 }
 
 WonerSchema.methods.generateAccessToken = function(){

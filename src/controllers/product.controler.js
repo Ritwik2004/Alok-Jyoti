@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose";
 import { uploadCloudinary } from "../utils/uploadCloudinary.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { AsyncHandeler } from "../utils/asyncHandeler";
+import { AsyncHandeler } from "../utils/asyncHandeler.js";
 import { product } from "../models/product.model.js";
 import { starReview } from "../models/productStarAndReview.model.js";
 
