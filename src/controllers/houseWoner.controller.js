@@ -259,7 +259,7 @@ const WonerRefreshAccessToken = AsyncHandeler(async(req,res)=>{
         if(incommingrefreshToken != wonerUser?.refreshToken){
             throw new ApiError(401,"refreshToken is expired or used...")
         }
-        const {newAccessToken,newRefreshToken} = generateAccessAndRefreshToken(wonerUser._id);
+        const {newAccessToken,newRefreshToken} = await generateAccessAndRefreshToken(wonerUser._id);
         const option = {
             httpOnly : true,
             secure : true

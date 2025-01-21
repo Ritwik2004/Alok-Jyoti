@@ -16,7 +16,7 @@ router.route("/UploadNote").post(
     ]),verifyJWT,uploadNotes)
 router.route("/deletDocument").post(deletDocument)
 
-router.route("/addNotesPlaylist").post(verifyJWT,addNotes);
+router.route("/addNotesPlaylist/:notesId").get(verifyJWT,addNotes);
 router.route("/getFevNotes").post(verifyJWT,getFevNotes);
 router.route("/removeNotes/:deletableDocument").get(verifyJWT,removeNotes);
 router.route("/notes").post(getAllNotes)

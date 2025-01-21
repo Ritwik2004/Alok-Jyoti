@@ -24,7 +24,7 @@ const uploadNotes = AsyncHandeler(async (req, res) => {
         description,
         author,
         sem,
-        subject,
+        subject : subject.toLowerCase(),
         woner: req.user._id
     })
     if (!noteDetails) {
@@ -51,60 +51,67 @@ const deletDocument = AsyncHandeler(async (req, res) => {
 })
 
 const getAllNotes = AsyncHandeler(async (req, res) => {
-    const { sem, subject, sortBy } = req.query
+    const { sem, subject, sortBy } = req.body
+    console.log("sem : ",sem,"subject : ",subject,"sortBy : ",sortBy)
+    let details
     if (!sem || !subject || !sortBy) {
         throw new ApiError(404, "Sem or Subject or Sort by is messing...")
     }
-    if (sem = 'all' && subject == 'all') {
-        const details = await Notes.find()
+    if (sem === 'all' && subject === 'all' && sortBy === 'nothing') {
+        console.log("check up 1")
+        details = await Notes.find()
+        if(!details.length){
+            throw new ApiError(401,"Something Went Wrong...")
+        }
     }
     else {
-        if (subject == 'all') {
-            const details = await Notes.aggregate([
+        let sortField = {};
+        sortField[sortBy] = 1;
+        console.log("check up 2")
+        if (subject === 'all' && sem !=='all') {
+            console.log("check up 3")
+            details = await Notes.aggregate([
                 {
                     $match: {
                         sem: sem
                     }
                 },
                 {
-                    $sort: {
-                        [sortBy]: 1
-                    }
-                }
-            ])
-            if (!details) {
-                throw new ApiError(401, "Something Went wrong...")
-            }
-            return res
-                .status(200)
-                .json(
-                    new ApiResponse(200, details, "Data Founded Successfully...")
-                )
-        }
-        else {
-            const details = await Notes.aggregate([
-                {
-                    $match: {
-                        sem: sem,
-                        subject: subject
-                    }
-                },
-                {
-                    $sort: {
-                        [sortBy]: 1
-                    }
+                    $sort: sortField
                 }
             ])
             if (!details.length) {
                 throw new ApiError(401, "Something Went wrong...")
             }
-            return res
-                .status(200)
-                .json(
-                    new ApiResponse(200, details[0], "Data Founded Successfully...")
-                )
+        }
+        else {
+            console.log("check up 4")
+            details = await Notes.aggregate([
+                {
+                    $match: {
+                        sem: sem
+                    }
+                },
+                {
+                    $match : {
+                        subject: subject
+                    }
+                },
+                {
+                    $sort: sortField
+                }
+            ])
+            if (details.length == 0) {
+                throw new ApiError(401, "Something Went wrong...")
+            }
         }
     }
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, details, "Data Founded Successfully...")
+    );
+
 })
 
 

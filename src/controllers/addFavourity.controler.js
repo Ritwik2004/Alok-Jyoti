@@ -5,7 +5,7 @@ import { AddFeverite } from "../models/AddToFavourit.model.js";
 import mongoose from "mongoose";
 
 const addNotes = AsyncHandeler(async(req,res)=>{
-    const notesId = req.params?.trim();
+    const notesId = req.params.notesId.trim();
     if(!notesId){
         throw new ApiError(404,"Notes not Found...")
     }
@@ -27,10 +27,13 @@ const addNotes = AsyncHandeler(async(req,res)=>{
         )
     }
     else{
-        await db.users.updateOne(
-            { savedBy: new mongoose.Types.ObjectId(req.user._id) },                      
-            { $push: { hobbies: notesId } } 
-        )
+        const updatedUser = await AddFeverite.updateOne(
+            { savedBy: new mongoose.Types.ObjectId(req.user._id) }, 
+            { $push: { notes: notesId } } 
+        );
+        if (updatedUser.modifiedCount === 0) {
+            throw new ApiError(400, "Failed to add note to the playlist.");
+        }
         return res
         .status(200)
         .json(
