@@ -24,17 +24,18 @@ const registerShopkeeper = AsyncHandeler(async(req,res)=>{
     if(!fullname || !username || !phNo || !shopName || !location || !password){
         throw new ApiError(404,"All fields are required...")
     }
+    console.log("Data arived")
     const existeduser = await shopkeeper.findOne({username})
     if(existeduser){
         throw new ApiError(409,"User with this username Exist Previously")
     }
     const user = await shopkeeper.create({
         fullname,
-        username,
+        username : username.toLowerCase(),
         phNo,
         email : email || "",
-        shopName,
-        location,
+        shopName : shopName.toLowerCase(),
+        location : location.toLowerCase(),
         upiId,
         password
     })
@@ -59,11 +60,11 @@ const shopkeeperLogin = AsyncHandeler(async(req,res)=>{
     if(!user){
         throw new ApiError(404,"User doesnot exist...")
     }
-    const PasswordCorrect = await shopkeeper.isPasswordCorrect(password);
+    const PasswordCorrect = await user.isPasswordCorrect(password);
     if(!PasswordCorrect){
         throw new ApiError(404,"incorrect password...");
     }
-    const {accessToken,refreshToken} = generateAccessAndRefreshToken(user._id);
+    const {accessToken,refreshToken} = await generateAccessAndRefreshToken(user._id);
     const loggedinUser = await shopkeeper.findById(user._id).select("-password -refreshToken");
 
     const options = {
@@ -107,7 +108,7 @@ const logoutShopKeeper = AsyncHandeler(async(req,res) =>{
 
 const changeLocation = AsyncHandeler(async(req,res)=>{
     const { newLocation } = req.body 
-    const updatedDetails = await shopkeeper.findByIdAndUpdate([
+    const updatedDetails = await shopkeeper.findByIdAndUpdate(
         req.user._id,
         {
             $set : {
@@ -117,7 +118,7 @@ const changeLocation = AsyncHandeler(async(req,res)=>{
         {
             new : true
         }
-    ])
+    ).select("-password -refreshToken")
     if(!updatedDetails){
         throw new ApiError(401,"Something went wrong while update the location details...")
     }
