@@ -16,7 +16,7 @@ router.route("/productUploadition").post(
             maxCount : 1
         }
     ]),
-    verifyJWT,
+    verifyJWTForShopKeeper,
     uploadProduct
 )
 router.route("/:productId").get(verifyJWTForShopKeeper,viewProduct)

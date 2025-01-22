@@ -27,7 +27,7 @@ const uploadProduct = AsyncHandeler(async (req, res) => {
 
     const productCreation = await product.create(
         {
-            productName,
+            productName : productName.toLowerCase(),
             image1: image1.url,
             image2: image2.url,
             price,
@@ -48,7 +48,8 @@ const uploadProduct = AsyncHandeler(async (req, res) => {
 })
 
 const viewProduct = AsyncHandeler(async (req, res) => {
-    const productId = req.params;
+    const productId = req.params.productId;
+    console.log("Product Id : ",productId)
     if (!productId) {
         throw new ApiError(404, "Product not found...")
     }
@@ -109,38 +110,48 @@ const viewProduct = AsyncHandeler(async (req, res) => {
 })
 
 const ChangeDeleveryDate = AsyncHandeler(async (req, res) => {
-    const productId = req.params
-    const new_deliveryDate = req.body
-    const Product = await product.findById(productId)
-    if (Product.owner != req.user._id) {
-        throw new ApiError(401, "Its seems like you are not the woner of this product...")
+    const productId = req.params.productId;
+    const { new_deliveryDate } = req.body;
+    if (!new_deliveryDate) {
+        throw new ApiError(400, "Delivery date is required.");
+    }
+    const dateObject = new Date(new_deliveryDate);
+    if (isNaN(dateObject.getTime())) {
+        throw new ApiError(400, "Invalid delivery date format. Use 'YYYY-MM-DD'.");
+    }
+    const Product = await product.findById(productId);
+    if (!Product) {
+        throw new ApiError(404, "Product not found.");
+    }
+
+    if (Product.owner.toString() !== req.user._id.toString()) {
+        throw new ApiError(401, "It seems like you are not the owner of this product.");
     }
     const updatedDetails = await product.findByIdAndUpdate(
         productId,
         {
-            $set: {
-                deliveryDate: new_deliveryDate
-            }
+             $set: {
+                deliveryDate: dateObject 
+            } 
         },
         {
-            new: true
+            new: true 
         }
-    )
+    );
+
     if (!updatedDetails) {
-        throw new ApiError(401, "Something went wrong while updateing delivery date of this product...")
+        throw new ApiError(500, "Something went wrong while updating the delivery date.");
     }
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(200, updatedDetails, "Delevery date is updated successfully...")
-        )
-})
+    return res.status(200).json(
+        new ApiResponse(200, updatedDetails, "Delivery date updated successfully.")
+    );
+});
 
 const changePrice = AsyncHandeler(async (req, res) => {
-    const productId = req.params
-    const newPrice = req.body
+    const productId = req.params.productId
+    const { newPrice } = req.body
     const Product = await product.findById(productId)
-    if (Product.owner != req.user._id) {
+    if (Product.owner.toString() != req.user._id.toString()) {
         throw new ApiError(401, "It seems like you are not the owner of this product...")
     }
     const updatedDetails = await product.findByIdAndUpdate(
@@ -163,12 +174,12 @@ const changePrice = AsyncHandeler(async (req, res) => {
 
 const changeAvaliability = AsyncHandeler(async (req, res) => {
     const { status } = req.body
-    const productId = req.params
+    const productId = req.params.productId
     if (!productId) {
         throw new ApiError(401, "Product not found...")
     }
     const ProductDetails = await product.findById(productId)
-    if (ProductDetails.owner != req.user._id) {
+    if (ProductDetails.owner.toString() != req.user._id.toString()) {
         throw new ApiError(401, "Its seems like you are not the woner of this product...")
     }
     const updatedDetails = await product.findByIdAndUpdate(
@@ -191,7 +202,7 @@ const changeAvaliability = AsyncHandeler(async (req, res) => {
 
 const starAndReview = AsyncHandeler(async (req, res) => {
     const { star, comment } = req.body
-    const productId = req.params
+    const productId = req.params.productId
     const givenBy = req.user._id
     const previouslyexist = await starReview.findOne({
         $and: [
@@ -204,7 +215,7 @@ const starAndReview = AsyncHandeler(async (req, res) => {
         ]
     })
     if (previouslyexist) {
-        await starAndReview.findByIdAndUpdate(
+        await starReview.findByIdAndUpdate(
             previouslyexist._id,
             {
                 $set: {
@@ -218,12 +229,13 @@ const starAndReview = AsyncHandeler(async (req, res) => {
         )
     }
     else {
-        const createReview = starAndReview.create({
+        const createReview = await starReview.create({
             star,
             comment,
             product: productId,
             givenBy
         })
+
     }
     return res
         .status(200)
@@ -243,7 +255,7 @@ const getAllProduct = AsyncHandeler(async (req, res) => {
 })
 
 const getSearchedProducts = AsyncHandeler(async (req, res) => {
-    const { productName, sortBy, sortType, filter, filterVal } = req.query
+    const { productName, sortBy, sortType, filter, filterVal } = req.body
     if (!productName || !sortBy || !sortType || !filter || !filterVal) {
         throw new ApiError(404, "Products name or Sort by or filter or filter val is not mention...")
     }
