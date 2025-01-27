@@ -9,8 +9,9 @@ import { sendMail } from "../utils/mailSend.js";
 import { json } from "express";
 
 const productOrder = AsyncHandeler(async(req,res)=>{
+    console.log(req.body)
     const {customerName, customerPhNo, customerEmailId, quantity, payment, customerAddress, pinCode } = req.body
-    if(!customerName || !customerPhNo || !quantity || !payment || customerAddress || !pinCode){
+    if(!customerName || !customerPhNo || !quantity || !payment || !customerAddress || !pinCode){
         throw new ApiError(404,"All fields are required!")
     }
     const userId = req.user._id
@@ -21,7 +22,7 @@ const productOrder = AsyncHandeler(async(req,res)=>{
     if(!user){
         throw new ApiError(401,"Unauthorized request!")
     }
-    const productId = req.params;
+    const productId = req.params.productId;
     if(!productId){
         throw new ApiError(401,"Invalid Product!")
     }
